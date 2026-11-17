@@ -13,6 +13,11 @@ urlpatterns = [
         api.api_statistics,
         name="api_statistics",
     ),
+    path(
+        "api/v1/media/<media_type:media_type>/<str:token>/",
+        api.api_media_list,
+        name="api_media_list",
+    ),
     path("<str:username>/<media_type:media_type>", views.media_list, name="medialist"),
     path("search", views.media_search, name="search"),
     path(

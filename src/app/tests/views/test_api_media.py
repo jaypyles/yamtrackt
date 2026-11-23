@@ -145,10 +145,8 @@ class ApiMediaListTests(TestCase):
 
     def test_does_not_leak_other_users_media(self):
         """Only media belonging to the token owner is returned."""
-        other = get_user_model().objects.create_user(
-            username="other",
-            password="12345",
-        )
+        other_credentials = {"username": "other", "password": "12345"}
+        other = get_user_model().objects.create_user(**other_credentials)
         other_item = Item.objects.create(
             media_id="m2",
             source=Sources.MANUAL.value,

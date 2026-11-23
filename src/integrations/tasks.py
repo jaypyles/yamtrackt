@@ -11,6 +11,7 @@ from app.models import MediaTypes
 from app.templatetags import app_tags
 from integrations.imports import (
     anilist,
+    crunchyroll,
     goodreads,
     google_takeout,
     helpers,
@@ -171,3 +172,14 @@ def import_goodreads(file, user_id, mode):
 def import_google_takeout(file, user_id, mode):
     """Celery task for importing YouTube listens/watches from Google Takeout."""
     return import_media(google_takeout.importer, file, user_id, mode)
+
+
+@shared_task(name="Import from Crunchyroll")
+def import_crunchyroll(username, user_id, mode):
+    """Celery task for importing anime watch history from Crunchyroll.
+
+    ``username`` carries an encrypted etp_rt cookie so periodic schedules can
+    reuse the shared create_import_schedule helper.
+    """
+    etp_rt = helpers.decrypt(username)
+    return import_media(crunchyroll.importer, etp_rt, user_id, mode)

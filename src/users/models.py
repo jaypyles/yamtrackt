@@ -717,6 +717,7 @@ class User(AbstractUser):
             "imdb": "Import from IMDB",
             "goodreads": "Import from GoodReads",
             "google_takeout": "Import from Google Takeout",
+            "crunchyroll": "Import from Crunchyroll",
         }
 
         # Reverse mapping to get source from task name

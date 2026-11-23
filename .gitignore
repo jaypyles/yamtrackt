@@ -20,3 +20,4 @@ TODO.txt
 .cache
 *.mo
 src/locale/*.pot
+src/db/crunchyroll/

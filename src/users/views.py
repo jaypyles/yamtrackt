@@ -16,6 +16,7 @@ from django_celery_beat.models import PeriodicTask
 
 from app.models import Item, MediaTypes
 from app.providers import tmdb
+from integrations.imports import crunchyroll
 from users.forms import NotificationSettingsForm, PasswordChangeForm, UserUpdateForm
 from users.models import (
     WATCH_PROVIDER_REGION_UNSET,
@@ -306,7 +307,14 @@ def integrations(request):
 def import_data(request):
     """Render the import data settings page."""
     import_tasks = request.user.get_import_tasks()
-    return render(request, "users/import_data.html", {"import_tasks": import_tasks})
+    return render(
+        request,
+        "users/import_data.html",
+        {
+            "import_tasks": import_tasks,
+            "has_crunchyroll_cookie": crunchyroll.has_cached_etp_rt(request.user),
+        },
+    )
 
 
 @require_GET

@@ -40,6 +40,12 @@ urlpatterns = [
         views.import_google_takeout,
         name="import_google_takeout",
     ),
+    path("import/crunchyroll", views.import_crunchyroll, name="import_crunchyroll"),
+    path(
+        "import/crunchyroll/clear-cookie",
+        views.clear_crunchyroll_cookie,
+        name="clear_crunchyroll_cookie",
+    ),
     path("export/csv", views.export_csv, name="export_csv"),
     path(
         "webhook/jellyfin/<str:token>",

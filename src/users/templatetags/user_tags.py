@@ -56,6 +56,10 @@ SOURCES_CONFIG = {
         "name": "Google Takeout",
         "logo": static("img/logo-youtube.svg"),
     },
+    "crunchyroll": {
+        "name": "Crunchyroll",
+        "logo": static("img/logo-crunchyroll.svg"),
+    },
 }
 
 

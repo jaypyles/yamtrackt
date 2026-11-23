@@ -20,7 +20,7 @@ from django.views.decorators.http import require_GET, require_POST
 import users
 from app import helpers as app_helpers
 from integrations import exports, tasks
-from integrations.imports import anilist, helpers, simkl, trakt
+from integrations.imports import anilist, crunchyroll, helpers, simkl, trakt
 from integrations.webhooks import emby, jellyfin, plex
 
 logger = logging.getLogger(__name__)
@@ -492,6 +492,51 @@ def import_goodreads(request):
         request,
         _("The task to import media from GoodReads CSV file has been queued."),
     )
+    return redirect("import_data")
+
+
+@require_POST
+def import_crunchyroll(request):
+    """View for importing anime watch history from Crunchyroll."""
+    try:
+        etp_rt = crunchyroll.resolve_etp_rt(request.user, request.POST.get("user"))
+    except helpers.MediaImportError as error:
+        messages.error(request, str(error))
+        return redirect("import_data")
+
+    # Keep the cookie out of Celery/periodic kwargs in plaintext.
+    enc_cookie = helpers.encrypt(etp_rt)
+    mode = request.POST["mode"]
+    frequency = request.POST["frequency"]
+
+    if frequency == "once":
+        tasks.import_crunchyroll.delay(
+            username=enc_cookie,
+            user_id=request.user.id,
+            mode=mode,
+        )
+        messages.info(
+            request,
+            _("The task to import media from Crunchyroll has been queued."),
+        )
+    else:
+        import_time = request.POST["time"]
+        helpers.create_import_schedule(
+            enc_cookie,
+            request,
+            mode,
+            frequency,
+            import_time,
+            "Crunchyroll",
+        )
+    return redirect("import_data")
+
+
+@require_POST
+def clear_crunchyroll_cookie(request):
+    """Clear the cached Crunchyroll etp_rt cookie for the current user."""
+    crunchyroll.clear_etp_rt(request.user)
+    messages.success(request, _("Cached Crunchyroll cookie cleared."))
     return redirect("import_data")
 
 
